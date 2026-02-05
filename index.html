@@ -233,12 +233,17 @@
             align-items: center;
             justify-content: center;
             transition: 0.2s;
-            font-size: 16px;
+            font-size: 1.2rem;
         }
 
         .icon-btn:hover { background: white; color: black; }
-        .icon-btn.active-state { background: var(--accent-3); border-color: var(--accent-3); color: black; box-shadow: 0 0 10px var(--accent-3); }
         
+        .icon-btn.active-btn {
+            background: var(--accent-2);
+            border-color: var(--accent-2);
+            color: white;
+            box-shadow: 0 0 10px var(--accent-2);
+        }
     </style>
 </head>
 <body>
@@ -270,10 +275,10 @@
         <div class="mini-title" id="miniTitle">Select a track...</div>
     </div>
     <div class="mini-controls">
-        <button class="icon-btn" id="loopBtn" onclick="toggleLoop()" title="Loop Song">↻</button>
-        <button class="icon-btn" onclick="shuffleSong()" title="Shuffle">⤨</button>
+        <button class="icon-btn" onclick="toggleLoop()" id="loopBtn" title="Loop Song">🔁</button>
+        <button class="icon-btn" onclick="playShuffle()" title="Shuffle">🔀</button>
         <button class="icon-btn" onclick="togglePlay()"><span id="playIcon">▶</span></button>
-        <button class="icon-btn" onclick="nextSong()" title="Next Song">⏭</button>
+        <button class="icon-btn" onclick="playNext()" title="Next Song">⏭</button>
     </div>
 </div>
 
@@ -380,36 +385,26 @@
 
     let currentCategory = 'all';
     let currentShattered = null;
+    let audioPlayer = new Audio();
+    audioPlayer.volume = 0.5; // Default volume since slider is removed
+    
+    // New State Variables
     let currentSongIndex = -1;
     let isLooping = false;
-    let audioPlayer = new Audio();
-    audioPlayer.volume = 0.5;
 
-    // --- Core Player Logic ---
-
-    function loadAndPlayIndex(index) {
-        if (index < 0 || index >= songs.length) return;
+    // Modified startTrack to handle indexing
+    function startTrack(index) {
+        if(index < 0 || index >= songs.length) return;
         
         currentSongIndex = index;
         const song = songs[index];
         
-        // 1. Play Audio
         audioPlayer.src = "songs/" + song.file;
         audioPlayer.play().catch(e => console.error("Playback failed:", e));
         
-        // 2. Update Mini Player UI
         document.getElementById('miniTitle').textContent = song.title;
         document.getElementById('miniPlayer').classList.add('visible');
         updatePlayIcon(true);
-
-        // 3. Update Visuals (Shatter Effect)
-        // Find the specific card wrapper for this index and trigger visual
-        const wrappers = document.querySelectorAll('.song-card-wrapper');
-        if(wrappers[index]) {
-            activateVisuals(wrappers[index]);
-            // Scroll to song if it's far off screen (optional, but nice)
-            // wrappers[index].scrollIntoView({behavior: "smooth", block: "center"}); 
-        }
     }
 
     function togglePlay() {
@@ -423,47 +418,52 @@
         document.getElementById('equalizer').classList.toggle('animating', isPlaying);
     }
 
-    // --- New Features (Next, Shuffle, Loop) ---
+    // --- NEW CONTROLS LOGIC ---
 
-    function nextSong() {
+    function playNext() {
         if (songs.length === 0) return;
-        // Move to next index, wrap around to 0 if at end
+        // Increment index, wrap around if at end
         let nextIndex = (currentSongIndex + 1) % songs.length;
-        loadAndPlayIndex(nextIndex);
+        startTrack(nextIndex);
     }
 
-    function shuffleSong() {
+    function playShuffle() {
         if (songs.length <= 1) return;
-        let newIndex;
-        // Find a random index that isn't the current one
+        let r;
+        // Ensure we don't pick the same song unless it's the only one
         do {
-            newIndex = Math.floor(Math.random() * songs.length);
-        } while (newIndex === currentSongIndex);
+            r = Math.floor(Math.random() * songs.length);
+        } while (r === currentSongIndex);
         
-        loadAndPlayIndex(newIndex);
+        startTrack(r);
+        // Note: Loop state persists. If loop was on, this new random song will now loop.
     }
 
     function toggleLoop() {
         isLooping = !isLooping;
         const btn = document.getElementById('loopBtn');
-        if(isLooping) {
-            btn.classList.add('active-state');
+        if (isLooping) {
+            btn.classList.add('active-btn');
         } else {
-            btn.classList.remove('active-state');
+            btn.classList.remove('active-btn');
         }
     }
 
-    // Event Listener for Song End
+    // --- EVENT LISTENERS ---
+
+    // Handle song end
     audioPlayer.addEventListener('ended', () => {
         if (isLooping) {
+            // If looping, replay current
             audioPlayer.currentTime = 0;
             audioPlayer.play();
         } else {
-            nextSong();
+            // Otherwise play next
+            playNext();
         }
     });
 
-    // --- Visuals & Rendering ---
+    // --- VISUAL SHATTER EFFECT ---
 
     function createShards(wrapper, content, index) {
         const container = document.createElement('div');
@@ -490,27 +490,25 @@
 
         wrapper.appendChild(container);
         
-        // On click, play this specific song index
+        // Grid Click Handler
         wrapper.addEventListener('click', () => {
-            loadAndPlayIndex(index);
+            if (currentShattered && currentShattered !== wrapper) {
+                currentShattered.classList.remove('shattered');
+                currentShattered.querySelectorAll('.shard').forEach(s => s.style.transform = 'translate(0,0) rotate(0deg)');
+            }
+            wrapper.classList.add('shattered');
+            wrapper.querySelectorAll('.shard').forEach(s => s.style.transform = s.dataset.transform);
+            currentShattered = wrapper;
+            
+            // Start track via index
+            startTrack(index);
         });
-    }
-
-    // Helper to trigger the shatter animation visually
-    function activateVisuals(wrapper) {
-        if (currentShattered && currentShattered !== wrapper) {
-            currentShattered.classList.remove('shattered');
-            currentShattered.querySelectorAll('.shard').forEach(s => s.style.transform = 'translate(0,0) rotate(0deg)');
-        }
-        wrapper.classList.add('shattered');
-        wrapper.querySelectorAll('.shard').forEach(s => s.style.transform = s.dataset.transform);
-        currentShattered = wrapper;
     }
 
     function renderSongs() {
         const grid = document.getElementById('songGrid');
         grid.innerHTML = songs.map((song, i) => `
-            <div class="song-card-wrapper" data-index="${i}" data-title="${song.title.toLowerCase()}" data-tags="${song.tags.join(' ')}">
+            <div class="song-card-wrapper" data-title="${song.title.toLowerCase()}" data-tags="${song.tags.join(' ')}">
                 <div class="song-card">
                     <div class="song-card-content">
                         <h3>${song.title}</h3>
@@ -520,6 +518,7 @@
             </div>`).join('');
 
         document.querySelectorAll('.song-card-wrapper').forEach((wrapper, i) => {
+            // Pass index to createShards so it knows which song to play
             createShards(wrapper, wrapper.querySelector('.song-card-content').innerHTML, i);
         });
     }
