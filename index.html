@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neon Vault v2.1</title>
+    <title>Neon Vault v3.0 // Audio</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Outfit:wght@300;400;600&display=swap');
 
@@ -24,7 +24,7 @@
             color: #fff;
             font-family: 'Outfit', sans-serif;
             margin: 0;
-            padding: 40px 20px 120px 20px; /* Added bottom padding for mini player */
+            padding: 40px 20px 120px 20px;
             overflow-x: hidden;
         }
 
@@ -154,14 +154,8 @@
                         inset 0 0 20px rgba(255, 255, 255, 0.1);
         }
 
-        /* Active State for Shattered Card */
-        .song-card-wrapper.shattered .shard {
-            opacity: 1;
-        }
-
-        .song-card-wrapper.shattered .song-card {
-            opacity: 0;
-        }
+        .song-card-wrapper.shattered .shard { opacity: 1; }
+        .song-card-wrapper.shattered .song-card { opacity: 0; }
 
         .song-card h3 {
             margin: 0 0 15px 0;
@@ -183,94 +177,10 @@
             border: 1px solid transparent;
         }
 
-        .tag-nc { background: rgba(188, 19, 254, 0.1); border-color: var(--accent-2); color: #e0aaff; box-shadow: 0 0 10px rgba(188, 19, 254, 0.2); }
+        .tag-nc { background: rgba(188, 19, 254, 0.1); border-color: var(--accent-2); color: #e0aaff; }
         .tag-g { background: rgba(255, 0, 122, 0.1); border-color: var(--accent-1); color: #ff85a1; }
         .tag-m { background: rgba(0, 212, 255, 0.1); border-color: var(--accent-3); color: #90e0ef; }
         .tag-fav { background: linear-gradient(45deg, var(--accent-1), var(--accent-2)); color: white; border: none; }
-
-        /* ====================
-           FULL OVERLAY PLAYER 
-           ==================== */
-        #playerOverlay {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(5, 5, 8, 0.98);
-            border-top: 2px solid var(--accent-2);
-            padding: 20px;
-            transform: translateY(110%);
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 2000;
-            box-shadow: 0 -20px 60px rgba(0,0,0,0.8);
-            display: flex;
-            justify-content: center;
-        }
-
-        #playerOverlay.active {
-            transform: translateY(0);
-        }
-
-        .player-wrapper {
-            width: 100%;
-            max-width: 1200px;
-            display: flex;
-            gap: 30px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .video-container {
-            flex: 2;
-            aspect-ratio: 16/9;
-            background: black;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 0 30px rgba(188, 19, 254, 0.2);
-        }
-
-        .video-container iframe {
-            width: 100%;
-            height: 100%;
-        }
-
-        .player-info {
-            flex: 1;
-            min-width: 250px;
-        }
-
-        .player-info h2 {
-            margin: 0 0 15px 0;
-            font-family: 'Syncopate', sans-serif;
-            font-size: 1.5rem;
-            background: linear-gradient(90deg, var(--accent-1), var(--accent-3));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .ui-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-family: 'Syncopate', sans-serif;
-            font-size: 10px;
-            transition: 0.3s;
-            margin-right: 10px;
-        }
-
-        .ui-btn:hover {
-            background: var(--accent-1);
-            border-color: var(--accent-1);
-            transform: scale(1.05);
-        }
-
-        .ui-btn.secondary:hover {
-             background: var(--accent-3);
-             border-color: var(--accent-3);
-        }
 
         /* ====================
            MINI BOTTOM BAR
@@ -294,49 +204,22 @@
             box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
         }
 
-        #miniPlayer.visible {
-            transform: translateY(0);
-        }
+        #miniPlayer.visible { transform: translateY(0); }
 
-        .mini-info {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
+        .mini-info { display: flex; align-items: center; gap: 20px; }
 
-        .playing-indicator {
-            display: flex;
-            gap: 3px;
-            height: 15px;
-            align-items: flex-end;
-        }
+        .playing-indicator { display: flex; gap: 3px; height: 15px; align-items: flex-end; }
+        .bar { width: 3px; height: 2px; background: var(--accent-3); transition: height 0.1s ease; }
 
-        .bar {
-            width: 3px;
-            background: var(--accent-3);
-            animation: equalizer 0.5s infinite alternate;
-        }
-        .bar:nth-child(2) { animation-delay: 0.1s; background: var(--accent-2); }
-        .bar:nth-child(3) { animation-delay: 0.2s; background: var(--accent-1); }
+        .playing-indicator.animating .bar { animation: equalizer 0.5s infinite alternate; }
+        .playing-indicator.animating .bar:nth-child(2) { animation-delay: 0.1s; background: var(--accent-2); }
+        .playing-indicator.animating .bar:nth-child(3) { animation-delay: 0.2s; background: var(--accent-1); }
 
-        @keyframes equalizer {
-            0% { height: 2px; }
-            100% { height: 15px; }
-        }
+        @keyframes equalizer { 0% { height: 2px; } 100% { height: 15px; } }
 
-        .mini-title {
-            font-family: 'Outfit', sans-serif;
-            font-weight: 600;
-            font-size: 1.1rem;
-            color: white;
-            text-shadow: 0 0 10px rgba(255,255,255,0.3);
-        }
+        .mini-title { font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 1.1rem; color: white; }
 
-        .mini-controls {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
+        .mini-controls { display: flex; gap: 15px; align-items: center; }
 
         .icon-btn {
             background: none;
@@ -350,15 +233,12 @@
             align-items: center;
             justify-content: center;
             transition: 0.2s;
-            font-size: 14px;
         }
 
-        .icon-btn:hover {
-            background: white;
-            color: black;
-            box-shadow: 0 0 15px rgba(255,255,255,0.4);
-        }
-
+        .icon-btn:hover { background: white; color: black; }
+        
+        input[type=range] { -webkit-appearance: none; width: 80px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 12px; height: 12px; border-radius: 50%; background: var(--accent-3); cursor: pointer; }
     </style>
 </head>
 <body>
@@ -382,7 +262,7 @@
 
 <div id="miniPlayer">
     <div class="mini-info">
-        <div class="playing-indicator">
+        <div class="playing-indicator" id="equalizer">
             <div class="bar"></div>
             <div class="bar"></div>
             <div class="bar"></div>
@@ -390,311 +270,208 @@
         <div class="mini-title" id="miniTitle">Select a track...</div>
     </div>
     <div class="mini-controls">
-        <button class="icon-btn" onclick="togglePlay()" title="Play/Pause">
-            <span id="playIcon">⏸</span>
-        </button>
-        <button class="ui-btn secondary" onclick="expandPlayer()">OPEN PLAYER</button>
-    </div>
-</div>
-
-<div id="playerOverlay">
-    <div class="player-wrapper">
-        <div class="video-container">
-            <div id="youtube-frame"></div>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-size: 10px; color:#aaa">VOL</span>
+            <input type="range" min="0" max="1" step="0.01" value="0.5" oninput="setVolume(this.value)">
         </div>
-        <div class="player-info">
-            <h2 id="nowPlaying">Now Playing</h2>
-            <p style="color: #aaa; margin-bottom: 20px;">Now playing from The Vault.</p>
-            <button class="ui-btn" onclick="minimizePlayer()">MINIMIZE (KEEP PLAYING)</button>
-        </div>
+        <button class="icon-btn" onclick="togglePlay()"><span id="playIcon">▶</span></button>
     </div>
 </div>
 
 <script>
-   const songs = [
-        { title: "Rockefeller Street", tags: ["nc", "g", "fav"], videoId: "hjGZLnja1o8" },
-        { title: "I Got No Time", tags: ["m", "nc"], videoId: "YREhVveHq9k" },
-        { title: "Never Be Alone", tags: ["g", "nc"], videoId: "uQpKzPCBqc4" },
-        { title: "Rasputin", tags: ["m"], videoId: "16y1AkoZkmQ" },
-        { title: "I Can't Decide", tags: ["m"], videoId: "buYrBbwyCGE" },
-        { title: "It's Been So Long", tags: ["m", "nc"], videoId: "qt2Ht_Tl9Ic" },
-        { title: "Eye of the Tiger", tags: ["m"], videoId: "btPJPFnesV4" },
-        { title: "Pretty Scene Girl", tags: ["g"], videoId: "P8F1RjcWLjM" },
-        { title: "Kiss Me Again", tags: ["g"], videoId: "IDQYlsDqpAU" },
-        { title: "Bad Boy", tags: ["nc", "m"], videoId: "cmlCuzn_mqI" },
-        { title: "Just Dance", tags: ["nc", "g"], videoId: "uc2KgPZ2Neo" },
-        { title: "Lucky Lucky", tags: ["g", "nc"], videoId: "25fsQofab9c" },
-        { title: "Faster N Harder", tags: ["nc", "g"], videoId: "BTksETlbL8E" },
-        { title: "Crucified", tags: ["g"], videoId: "cKlBnjlpLIM" },
-        { title: "Shinitai-chan", tags: ["g"], videoId: "ucsadKDNTQA" },
-        { title: "Judas", tags: ["g"], videoId: "LO-TTgN-nAQ" },
-        { title: "Sweet Dreams", tags: ["g", "nc"], videoId: "bG9z-atG7gc" },
-        { title: "How Do You Do", tags: ["nc", "g"], videoId: "0GEX_sVwUn4" },
-        { title: "Caramelldansen", tags: ["nc", "g"], videoId: "A67ZkAd1wmI" },
-        { title: "Every Time We Touch", tags: ["nc", "g"], videoId: "2ziqtyseR3M" },
-        { title: "God is a Girl", tags: ["nc", "g"], videoId: "_sB26zkNg2I" },
-        { title: "Doktorspiele", tags: ["g", "nc"], videoId: "Yd39WHBYjFk" },
-        { title: "Doktorspiele (Original)", tags: ["g"], videoId: "8jpr1Ma183Y" },
-        { title: "When You Leave", tags: ["nc", "m"], videoId: "KmDQuwJWs84" },
-        { title: "Pretty Little Psycho", tags: ["nc", "g"], videoId: "BByMzI1YjKA" },
-        { title: "Sweet Little Bumblebee", tags: ["nc", "g"], videoId: "z3OKd5b2Rlw" },
-        { title: "Pretty Rave Girl", tags: ["nc", "g"], videoId: "WaNwvukxz64" },
-        { title: "Stereo Love", tags: ["nc"], videoId: "jeJcpGw64sI" },
-        { title: "I'm Good (Blue)", tags: ["g", "nc"], videoId: "uVCV3agIGm0" },
-        { title: "Naughty Naughty", tags: ["g", "nc"], videoId: "lXnw5hrc1bs" },
-        { title: "Right Round", tags: ["nc"], videoId: "blBDU7G0_Oo" },
-        { title: "How To Be A Heartbreaker", tags: ["g"], videoId: "O6NvsM49N6w" },
-        { title: "Monster", tags: ["m", "nc"], videoId: "KheI_qHGT1o" },
-        { title: "Angel With A Shotgun", tags: ["m", "nc"], videoId: "cvaIgq5j2Q8" },
-        { title: "My Heart Beats Like A Drum", tags: ["nc", "g"], videoId: "1yyTxvzeGuw" },
-        { title: "Cherry Gum", tags: ["g"], videoId: "nBfcuerhYog" },
-        { title: "I Like The Way You Kiss Me", tags: ["m"], videoId: "9ReSX1vakUk" },
-        { title: "Waiting For Love", tags: ["m", "nc"], videoId: "Ni0bXuKvvT8" },
-        { title: "Butterfly", tags: ["nc", "g"], videoId: "NhndeYcXRHA" },
-        { title: "Solo", tags: ["nc", "g"], videoId: "XGUS7VnLvZU" },
-        { title: "Discord", tags: ["m", "nc"], videoId: "5Z56MZFMp0k" },
-        { title: "Around The World", tags: ["g", "nc"], videoId: "8qFwk-lvvXs" },
-        { title: "Bad Apple", tags: ["g", "nc"], videoId: "rQg2qngyIZM" },
-        { title: "18", tags: ["g"], videoId: "-mh0vism1c4" },
-        { title: "Wrap Me In Plastic", tags: ["g", "nc"], videoId: "V_DeCu4PZFA" },
-        { title: "Bubblegum Bitch", tags: ["g"], videoId: "lz7ohfQ9ah8" },
-        { title: "Ancient Dreams", tags: ["g"], videoId: "_V17JN76uxc" },
-        { title: "My Jealousy", tags: ["g"], videoId: "g_7sHcgR_rs" },
-        { title: "My Jealousy (Nightcore)", tags: ["g", "nc"], videoId: "u7Qpu8rc4Hk" },
-        { title: "Lay All Your Love On Me", tags: ["g"], videoId: "ulZQTrV8QlQ" },
-        { title: "Parade", tags: ["m"], videoId: "APIKVLw1tT0" },
-        { title: "My Life Is A Party", tags: ["m"], videoId: "sok8kp_DSqE" },
-        { title: "Kings & Queens (NC)", tags: ["g", "nc"], videoId: "0X7rw11LBdo" },
-        { title: "Kings & Queens", tags: ["g"], videoId: "jH1RNk8954Q" },
-        { title: "Beautiful Day", tags: ["g"], videoId: "Q2g6L03FNPQ" },
-        { title: "Solo Tu", tags: ["g", "nc"], videoId: "3SJJrnafioI" },
-        { title: "Friday", tags: ["g"], videoId: "IHC1Ma6EBbE" },
-        { title: "The Labyrinth", tags: ["nc"], videoId: "oCMRGbnXYps" },
-        { title: "See How I Circle", tags: ["nc"], videoId: "skHfLY-L2Lw" },
-        { title: "Gone For Good", tags: ["nc", "g"], videoId: "pQmqgHs1WCY" },
-        { title: "Full Moon", tags: ["nc", "g"], videoId: "mLwRXWZwtq4" },
-        { title: "Escaping Gravity", tags: ["nc"], videoId: "5FGaI7lG8gE" },
-        { title: "Devil's Lullaby", tags: ["nc", "g"], videoId: "uqjKsBAHkaw" },
-        { title: "Drum Go Dum", tags: ["nc", "g"], videoId: "hKTvSvoBu8k" },
-        { title: "Who Is She?", tags: ["m"], videoId: "VR-EiEBqfWw" },
-        { title: "Who Is She? (NC)", tags: ["nc"], videoId: "4ERNSBXq334" },
-        { title: "All I Want Is You", tags: ["m", "nc"], videoId: "v2-PN87uD9U" },
-        { title: "6 Little Eggs", tags: ["m"], videoId: "M8uCgvRN6tg" },
-        { title: "Roses Are Red", tags: ["g", "nc"], videoId: "5HSWvFs3OMA" },
-        { title: "Love For You", tags: ["g"], videoId: "nQVaRFP-ppw" },
-        { title: "From Paris to Berlin", tags: ["g"], videoId: "THt5u-i2d9k" },
-        { title: "Love You Like a Love Song", tags: ["g", "nc"], videoId: "ZzfEBeLXERs" },
-        { title: "Dam Dadi Do", tags: ["nc"], videoId: "6SCQyBcHeDg" },
-        { title: "I Love You So", tags: ["g"], videoId: "SGF8dhihicU" },
-        { title: "Monster (Sped Up)", tags: ["m"], videoId: "-5MgGG_P23c" },
-        { title: "Winter 4Ever", tags: ["g", "nc"], videoId: "rj0i5G2ZdZ4" },
-        { title: "Gold", tags: ["m"], videoId: "ntG50eXbBtc" },
-        { title: "I Really Want to Stay", tags: ["g"], videoId: "h4VJGNNSQnw" },
-        { title: "Hero Rider Jeans", tags: ["m"], videoId: "swv4p88dxSY" },
-        { title: "Washing Machine Heart", tags: ["g", "nc"], videoId: "mu2rVefKIJ8" },
-        { title: "Oh My Little Baby Boy", tags: ["g", "nc"], videoId: "ARsQAfQSHTc" },
-        { title: "Partners In Crime", tags: ["nc"], videoId: "4UdepnkstAU" },
-        { title: "I Don't Know", tags: ["nc"], videoId: "fhwVE9xYEzw" },
-        { title: "Ready or Not", tags: ["g", "nc"], videoId: "ZWkO_M6vWBw" },
-        { title: "Cheri Cheri Lady", tags: ["nc"], videoId: "wamz_k2JYLo" },
-        { title: "The World We Knew", tags: ["m"], videoId: "dthgRdTf0Ds" },
-        { title: "My Ordinary Life", tags: ["m"], videoId: "MURua52_YPg" },
-        { title: "Don't Stop The Music", tags: ["g", "nc"], videoId: "IXrEzetT0Gs" },
-        { title: "Angel of Darkness", tags: ["nc"], videoId: "BWNmLW_ddIk" },
-        { title: "Dark Red", tags: ["nc"], videoId: "rJ02AzDgvX0" },
-        { title: "House Of Memories", tags: ["nc"], videoId: "OZqwTzPJeC4" },
-        { title: "Bass Slut", tags: ["g"], videoId: "ZhJBNjbk0ds" },
-        { title: "Gossip", tags: ["m", "nc"], videoId: "7MJ-pUrMeYw" },
-        { title: "Lovefool", tags: ["g", "nc"], videoId: "VKsNKWuoUk8" },
-        { title: "Paint It Black", tags: ["nc"], videoId: "AKlAPTpJCRA" },
-        { title: "I'm So Crazy For You", tags: ["m"], videoId: "iRZEQoMk3B0" },
-        { title: "All I Ever Wanted", tags: ["m"], videoId: "P3CxhBIrBho" }
+    const songs = [
+        { title: "Rockefeller Street", tags: ["nc", "g", "fav"], file: "Nightcore_-_Rockefeller_Street_.mp3" },
+        { title: "I Got No Time", tags: ["m", "nc"], file: "Five_Nights_at_Freddys_4_Song_-_I_Got_No_Time_FNAF4_-_The_Living_Tombstone_.mp3" },
+        { title: "Never Be Alone", tags: ["g", "nc"], file: "Never_Be_Alone_FNAF4_Song_-_Shadrow_.mp3" },
+        { title: "Rasputin", tags: ["m"], file: "Boney_M._-_Rasputin_Sopot_Festival_1979_.mp3" },
+        { title: "I Can't Decide", tags: ["m"], file: "I_Cant_Decide_.mp3" },
+        { title: "It's Been So Long", tags: ["m", "nc"], file: "Its_Been_So_Long_.mp3" },
+        { title: "Eye of the Tiger", tags: ["m"], file: "Survivor_-_Eye_Of_The_Tiger_Official_HD_Video_.mp3" },
+        { title: "Pretty Scene Girl", tags: ["g"], file: "Pretty_Scene_Girl_.mp3" },
+        { title: "Kiss Me Again", tags: ["g"], file: "KISS_ME_AGAIN___.mp3" },
+        { title: "Bad Boy", tags: ["nc", "m"], file: "Nightcore_-_Bad_boy_.mp3" },
+        { title: "Just Dance", tags: ["nc", "g"], file: "Nightcore_-_Just_Dance_.mp3" },
+        { title: "Lucky Lucky", tags: ["g", "nc"], file: "Im_So_Lucky_Lucky_-_Nightcore_.mp3" },
+        { title: "Faster N Harder", tags: ["nc", "g"], file: "6arelyhuman_-_Faster_N_Harder_Official_Audio_.mp3" },
+        { title: "Crucified", tags: ["g"], file: "Army_Of_Lovers_-_Crucified_Lyrics_.mp3" },
+        { title: "Shinitai-chan", tags: ["g"], file: "Shinitai-chan_English_CoverJubyPhonic.mp3" },
+        { title: "Judas", tags: ["g"], file: "Judas_-_Lady_GagaBest_part_Lyrics_.mp3" },
+        { title: "Sweet Dreams", tags: ["g", "nc"], file: "Eurythmics_-_Sweet_Dreams_Lyrics_.mp3" },
+        { title: "How Do You Do", tags: ["nc", "g"], file: "Nightcore_-_How_Do_You_Do_.mp3" },
+        { title: "Caramelldansen", tags: ["nc", "g"], file: "Caramella_Girls_-_Caramelldansen_Official_English_Version_.mp3" },
+        { title: "Every Time We Touch", tags: ["nc", "g"], file: "Nightcore_-_Everytime_We_Touch_Remix__.mp3" },
+        { title: "God is a Girl", tags: ["nc", "g"], file: "Nightcore_-_God_Is_A_Girl_.mp3" },
+        { title: "Doktorspiele", tags: ["g", "nc"], file: "Nightcore_-_Doktorspiele_English_.mp3" },
+        { title: "Doktorspiele (Original)", tags: ["g"], file: "Doktorspiele_English_Version_.mp3" },
+        { title: "When You Leave", tags: ["nc", "m"], file: "Nightcore_-_When_You_Leave_Numa_Numa_.mp3" },
+        { title: "Pretty Little Psycho", tags: ["nc", "g"], file: "Nightcore_-_Pretty_Little_Psycho_.mp3" },
+        { title: "Sweet Little Bumblebee", tags: ["nc", "g"], file: "Nightcore__Sweet_Little_Bumblebee_lyric_video_.mp3" },
+        { title: "Pretty Rave Girl", tags: ["nc", "g"], file: "Pretty_Rave_Girl_2010_-_S3RL_.mp3" },
+        { title: "Stereo Love", tags: ["nc"], file: "Stereo_Lovers_-_Stereo_Love_Tiktok_Sped_Up_Version_.mp3" },
+        { title: "I'm Good (Blue)", tags: ["g", "nc"], file: "Nightcore__Im_Good_Blue_.mp3" },
+        { title: "Naughty Naughty", tags: ["g", "nc"], file: "Nightcore_-_Naughty_Naughty_-_Lyrics_.mp3" },
+        { title: "Right Round", tags: ["nc"], file: "Nightcore_Right_Round_.mp3" },
+        { title: "How To Be A Heartbreaker", tags: ["g"], file: "Nightcore_-_How_To_Be_A_Heartbreaker_.mp3" },
+        { title: "Monster", tags: ["m", "nc"], file: "Nightcore_-_Monster_Skillet_.mp3" },
+        { title: "Angel With A Shotgun", tags: ["m", "nc"], file: "Nightcore_-_Angel_With_A_Shotgun_.mp3" },
+        { title: "My Heart Beats Like A Drum", tags: ["nc", "g"], file: "Nightcore_-_My_Heart_Beats_Like_A_Drum_.mp3" },
+        { title: "Cherry Gum", tags: ["g"], file: "Nightcore_-_Cherry_Gum_Lyrics_.mp3" },
+        { title: "I Like The Way You Kiss Me", tags: ["m"], file: "Nightcore_-_i_like_the_way_you_kiss_me_Lyrics_.mp3" },
+        { title: "Waiting For Love", tags: ["m", "nc"], file: "Nightcore_-_Waiting_For_Love_.mp3" },
+        { title: "Butterfly", tags: ["nc", "g"], file: "Nightcore_-_Butterfly_Lyrics_.mp3" },
+        { title: "Solo", tags: ["nc", "g"], file: "Nightcore_-_Solo_-_Lyrics_.mp3" },
+        { title: "Discord", tags: ["m", "nc"], file: "Discord_.mp3" },
+        { title: "Around The World", tags: ["g", "nc"], file: "Nightcore__Around_the_world_.mp3" },
+        { title: "Bad Apple", tags: ["g", "nc"], file: "Bad_Apple_English_CoverJubyPhonic_.mp3" },
+        { title: "18", tags: ["g"], file: "Nightcore_-_18_English_.mp3" },
+        { title: "Wrap Me In Plastic", tags: ["g", "nc"], file: "Nightcore_-_Wrap_Me_In_Plastic_Lyrics_.mp3" },
+        { title: "Bubblegum Bitch", tags: ["g"], file: "Nightcore_-_Bubblegum_Btch_.mp3" },
+        { title: "Ancient Dreams", tags: ["g"], file: "MARINA_-_Ancient_Dreams_In_A_Modern_Land_Official_Visual_.mp3" },
+        { title: "My Jealousy", tags: ["g"], file: "MY_JEALOUSY_.mp3" },
+        { title: "My Jealousy (Nightcore)", tags: ["g", "nc"], file: "MY_JEALOUSY_Nightcore_.mp3" },
+        { title: "Lay All Your Love On Me", tags: ["g"], file: "ABBA_-_Lay_All_Your_Love_On_Me_Official_Lyric_Video_.mp3" },
+        { title: "Parade", tags: ["m"], file: "Susumu_Hirasawa_-_Parade_.mp3" },
+        { title: "My Life Is A Party", tags: ["m"], file: "ItaloBrothers_-_My_Life_Is_A_Party_Official_Video_HD_.mp3" },
+        { title: "Kings & Queens (NC)", tags: ["g", "nc"], file: "Nightcore_-_Kings__Queens_Lyrics_.mp3" },
+        { title: "Kings & Queens", tags: ["g"], file: "Ava_Max_-_Kings__Queens_.mp3" },
+        { title: "Beautiful Day", tags: ["g"], file: "Dj_Melodie_-_Beautiful_Day_.mp3" },
+        { title: "Solo Tu", tags: ["g", "nc"], file: "Highland_-_Solo_Tu_Nightcore_Mix_.mp3" },
+        { title: "Friday", tags: ["g"], file: "Riton_x_Nightcrawlers_-_Friday_Dopamine_Re-Edit_Its_Friday_Then_Song_.mp3" },
+        { title: "The Labyrinth", tags: ["nc"], file: "Nightcore_-_The_Labyrinth_NIVIRO_-_Lyrics_.mp3" },
+        { title: "See How I Circle", tags: ["nc"], file: "Miracle_Musical_-_See_how_I_circle_imaginary_mind_Labyrinth_Sped_Up_Lyrics_.mp3" },
+        { title: "Gone For Good", tags: ["nc", "g"], file: "Nightcore_-_Gone_For_Good_Lyrics_.mp3" },
+        { title: "Full Moon", tags: ["nc", "g"], file: "Nightcore_-_Full_Moon_Lyrics_.mp3" },
+        { title: "Escaping Gravity", tags: ["nc"], file: "Nightcore_-_Escaping_Gravity_TheFatRat__Cecilia_Gault__Lyrics_.mp3" },
+        { title: "Devil's Lullaby", tags: ["nc", "g"], file: "Nightcore_-_Devils_Lullaby_Lyrics_.mp3" },
+        { title: "Drum Go Dum", tags: ["nc", "g"], file: "Nightcore_-_DRUM_GO_DUM_KDA_Lyrics_.mp3" },
+        { title: "Who Is She?", tags: ["m"], file: "I_Monster_-_Who_Is_She_Lyrics_.mp3" },
+        { title: "Who Is She (NC)", tags: ["nc"], file: "Nightcore_-_Who_is_She_.mp3" },
+        { title: "All I Want Is You", tags: ["m", "nc"], file: "Nightcore_all_i_want_is_you_-_Rebzyyx__Lyrics_.mp3" },
+        { title: "6 Little Eggs", tags: ["m"], file: "B3nte_Mike_Emilio_-_6_Little_Eggs_.mp3" },
+        { title: "Roses Are Red", tags: ["g", "nc"], file: "Nightcore_Roses_Are_Red_Original_Version_.mp3" },
+        { title: "Love For You", tags: ["g"], file: "loveli_lori__ovg_-_love_for_you_Official_Audio_.mp3" },
+        { title: "From Paris to Berlin", tags: ["g"], file: "INFERNAL_-_From_Paris_to_Berlin_.mp3" },
+        { title: "Love You Like a Love Song", tags: ["g", "nc"], file: "Nightcore_-_Love_You_Like_a_Love_Song_Lyrics_.mp3" },
+        { title: "Dam Dadi Do", tags: ["nc"], file: "Nightcore_-_Dam_Dadi_Do_.mp3" },
+        { title: "I Love You So", tags: ["g"], file: "Schnuffel-I_love_you_so_.mp3" },
+        { title: "Monster (Sped Up)", tags: ["m"], file: "Monster_Sped_Up_.mp3" },
+        { title: "Winter 4Ever", tags: ["g", "nc"], file: "Baby_Jane_-_winter_4ever_sped_up_.mp3" },
+        { title: "Gold", tags: ["m"], file: "Spandau_Ballet_-_Gold_HD_Remastered_.mp3" },
+        { title: "I Really Want to Stay", tags: ["g"], file: "Cyberpunk_Edgerunners__I_Really_Want_to_Stay_At_Your_House_by_Rosa_Walton__Netflix_.mp3" },
+        { title: "Hero Rider Jeans", tags: ["m"], file: "Lil_Hero_-_Hero_Rider_Jeans_Lyrics_Dun_dun_dun_.mp3" },
+        { title: "Washing Machine Heart", tags: ["g", "nc"], file: "washing_machine_heart_-_mitski_sped_upnightcore_.mp3" },
+        { title: "Oh My Little Baby Boy", tags: ["g", "nc"], file: "Nightcore__Oh_My_Little_Baby_Boy_Lyrics_.mp3" },
+        { title: "Partners In Crime", tags: ["nc"], file: "Nightcore_-_Partners_In_Crime_.mp3" },
+        { title: "I Don't Know", tags: ["nc"], file: "Nightcore_-_I_Dont_Know_.mp3" },
+        { title: "Ready or Not", tags: ["g", "nc"], file: "Nightcore_-_Ready_or_not_.mp3" },
+        { title: "Cheri Cheri Lady", tags: ["nc"], file: "Nightcore_-_Cheri_Cheri_Lady_.mp3" },
+        { title: "The World We Knew", tags: ["m"], file: "The_World_We_Knew_Over_And_Over_.mp3" },
+        { title: "My Ordinary Life", tags: ["m"], file: "My_Ordinary_Life_.mp3" },
+        { title: "Don't Stop The Music", tags: ["g", "nc"], file: "Nightcore_Dont_Stop_The_Music_-_Rihanna__Lyrics_.mp3" },
+        { title: "Angel of Darkness", tags: ["nc"], file: "Nightcore_Angel_of_Darkness_Lyrics_.mp3" },
+        { title: "Dark Red", tags: ["nc"], file: "Dark_red_nightcore_.mp3" },
+        { title: "House Of Memories", tags: ["nc"], file: "Nightcore_House_Of_Memories_.mp3" },
+        { title: "Bass Slut", tags: ["g"], file: "Bass_Slut_-_S3RL_feat._Tamika_.mp3" },
+        { title: "Gossip", tags: ["m", "nc"], file: "_Nightcore_-_GOSSIP__Mneskin_Tom_Morello_Lyrics_.mp3" },
+        { title: "Lovefool", tags: ["g", "nc"], file: "Nightcore_-_twocolors__Lovefool_ft._Pia_Mia_Lyrics_.mp3" },
+        { title: "Paint It Black", tags: ["nc"], file: "Nightcore_-_Paint_It_Black_.mp3" },
+        { title: "I'm So Crazy For You", tags: ["m"], file: "Im_so_crazy_for_youuu_3_.mp3" },
+        { title: "All I Ever Wanted", tags: ["m"], file: "Basshunter_-_All_I_Ever_Wanted_OFFICIAL_VIDEO_Ultra_Music_.mp3" }
     ];
 
     let currentCategory = 'all';
     let currentShattered = null;
-    let player; // YouTube Player Object
-    let isPlayerReady = false;
-    let isPlaying = false;
+    let audioPlayer = new Audio();
+    audioPlayer.volume = 0.5;
 
-    // --- YOUTUBE API SETUP ---
-    // This loads the IFrame Player API code asynchronously.
-    var tag = document.createElement('script');
-    tag.src = "https://www.youtube.com/iframe_api";
-    var firstScriptTag = document.getElementsByTagName('script')[0];
-    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-    function onYouTubeIframeAPIReady() {
-        player = new YT.Player('youtube-frame', {
-            height: '100%',
-            width: '100%',
-            videoId: '', // Start empty
-            playerVars: {
-                'playsinline': 1,
-                'rel': 0,
-                'enablejsapi': 1,
-                'origin': window.location.origin
-            },
-            events: {
-                'onReady': onPlayerReady,
-                'onStateChange': onPlayerStateChange
-            }
-        });
-    }
-
-    function onPlayerReady(event) {
-        isPlayerReady = true;
-    }
-
-    function onPlayerStateChange(event) {
-        const playIcon = document.getElementById('playIcon');
-        if (event.data == YT.PlayerState.PLAYING) {
-            isPlaying = true;
-            playIcon.textContent = "⏸";
-        } else {
-            isPlaying = false;
-            playIcon.textContent = "▶";
-        }
-    }
-
-    // --- PLAYER CONTROLS ---
-
-    function startTrack(videoId, title) {
-        if (!isPlayerReady) return;
-        
-        // Load video
-        player.loadVideoById(videoId);
-        
-        // Update Titles
-        document.getElementById('nowPlaying').textContent = title;
+    function startTrack(fileName, title) {
+        audioPlayer.src = "songs/" + fileName;
+        audioPlayer.play().catch(e => console.error("Playback failed:", e));
         document.getElementById('miniTitle').textContent = title;
-        
-        // Show Full Player
-        expandPlayer();
-    }
-
-    function minimizePlayer() {
-        document.getElementById('playerOverlay').classList.remove('active');
         document.getElementById('miniPlayer').classList.add('visible');
-    }
-
-    function expandPlayer() {
-        document.getElementById('miniPlayer').classList.remove('visible');
-        document.getElementById('playerOverlay').classList.add('active');
+        updatePlayIcon(true);
     }
 
     function togglePlay() {
-        if (!isPlayerReady) return;
-        if (isPlaying) {
-            player.pauseVideo();
-        } else {
-            player.playVideo();
-        }
+        if (!audioPlayer.src) return;
+        audioPlayer.paused ? audioPlayer.play() : audioPlayer.pause();
+        updatePlayIcon(!audioPlayer.paused);
     }
 
-    // --- UI & SHATTER LOGIC ---
+    function updatePlayIcon(isPlaying) {
+        document.getElementById('playIcon').textContent = isPlaying ? "⏸" : "▶";
+        document.getElementById('equalizer').classList.toggle('animating', isPlaying);
+    }
 
-    function createShards(wrapper, content, videoId, title) {
+    function setVolume(val) { audioPlayer.volume = val; }
+
+    audioPlayer.addEventListener('ended', () => updatePlayIcon(false));
+
+    function createShards(wrapper, content, fileName, title) {
         const container = document.createElement('div');
         container.className = 'shatter-container';
-        
-        const shards = [
+        const shardData = [
             { clip: 'polygon(0 0, 35% 0, 25% 30%, 0 25%)', transform: 'translate(-8px, -8px) rotate(-3deg)' },
             { clip: 'polygon(35% 0, 65% 0, 55% 25%, 25% 30%)', transform: 'translate(0, -12px) rotate(2deg)' },
             { clip: 'polygon(65% 0, 100% 0, 100% 20%, 75% 28%, 55% 25%)', transform: 'translate(10px, -10px) rotate(-4deg)' },
             { clip: 'polygon(0 25%, 25% 30%, 20% 55%, 0 50%)', transform: 'translate(-12px, 0) rotate(2deg)' },
             { clip: 'polygon(25% 30%, 55% 25%, 60% 45%, 45% 60%, 20% 55%)', transform: 'translate(0, 5px) rotate(-2deg)' },
-            { clip: 'polygon(55% 25%, 75% 28%, 70% 50%, 60% 45%)', transform: 'translate(8px, 0) rotate(3deg)' },
-            { clip: 'polygon(75% 28%, 100% 20%, 100% 45%, 70% 50%)', transform: 'translate(15px, 0) rotate(-3deg)' },
             { clip: 'polygon(70% 50%, 100% 45%, 100% 70%, 75% 72%)', transform: 'translate(12px, 5px) rotate(2deg)' },
             { clip: 'polygon(0 50%, 20% 55%, 15% 78%, 0 75%)', transform: 'translate(-10px, 8px) rotate(-2deg)' },
-            { clip: 'polygon(20% 55%, 45% 60%, 40% 85%, 15% 78%)', transform: 'translate(-5px, 10px) rotate(3deg)' },
-            { clip: 'polygon(45% 60%, 60% 65%, 55% 90%, 40% 85%)', transform: 'translate(0, 15px) rotate(-3deg)' },
-            { clip: 'polygon(60% 65%, 75% 72%, 70% 95%, 55% 90%)', transform: 'translate(5px, 12px) rotate(2deg)' },
-            { clip: 'polygon(75% 72%, 100% 70%, 100% 100%, 70% 95%)', transform: 'translate(15px, 15px) rotate(-4deg)' },
             { clip: 'polygon(15% 78%, 40% 85%, 55% 90%, 70% 95%, 100% 100%, 0 100%)', transform: 'translate(0, 18px) rotate(0deg)' }
         ];
 
-        shards.forEach(shard => {
+        shardData.forEach(s => {
             const piece = document.createElement('div');
             piece.className = 'shard';
-            piece.style.clipPath = shard.clip;
+            piece.style.clipPath = s.clip;
             piece.innerHTML = content;
-            piece.dataset.transform = shard.transform;
+            piece.dataset.transform = s.transform;
             container.appendChild(piece);
         });
 
         wrapper.appendChild(container);
-        
         wrapper.addEventListener('click', () => {
-            // 1. Repair the previously shattered card (if exists and isn't this one)
             if (currentShattered && currentShattered !== wrapper) {
                 currentShattered.classList.remove('shattered');
-                const oldShards = currentShattered.querySelectorAll('.shard');
-                oldShards.forEach(s => s.style.transform = 'translate(0, 0) rotate(0deg)');
+                currentShattered.querySelectorAll('.shard').forEach(s => s.style.transform = 'translate(0,0) rotate(0deg)');
             }
-            
-            // 2. Shatter the clicked card (ensure it's active)
             wrapper.classList.add('shattered');
-            const newShards = wrapper.querySelectorAll('.shard');
-            newShards.forEach(s => s.style.transform = s.dataset.transform);
-            
-            // 3. Update state and play
+            wrapper.querySelectorAll('.shard').forEach(s => s.style.transform = s.dataset.transform);
             currentShattered = wrapper;
-            startTrack(videoId, title);
+            startTrack(fileName, title);
         });
     }
 
     function renderSongs() {
         const grid = document.getElementById('songGrid');
-        grid.innerHTML = songs.map(song => {
-            const content = `
-                <h3>${song.title}</h3>
-                <div class="tag-row">
-                    ${song.tags.map(t => `<span class="tag tag-${t}">${t === 'nc' ? 'Nightcore' : t.toUpperCase()}</span>`).join('')}
-                </div>
-            `;
-            
-            return `
-                <div class="song-card-wrapper" data-title="${song.title.toLowerCase()}" data-tags="${song.tags.join(' ')}">
-                    <div class="song-card">
-                        <div class="song-card-content">${content}</div>
+        grid.innerHTML = songs.map(song => `
+            <div class="song-card-wrapper" data-title="${song.title.toLowerCase()}" data-tags="${song.tags.join(' ')}">
+                <div class="song-card">
+                    <div class="song-card-content">
+                        <h3>${song.title}</h3>
+                        <div class="tag-row">${song.tags.map(t => `<span class="tag tag-${t}">${t === 'nc' ? 'Nightcore' : t.toUpperCase()}</span>`).join('')}</div>
                     </div>
                 </div>
-            `;
-        }).join('');
+            </div>`).join('');
 
-        document.querySelectorAll('.song-card-wrapper').forEach((wrapper, index) => {
-            const song = songs[index];
-            const content = wrapper.querySelector('.song-card-content').innerHTML;
-            createShards(wrapper, content, song.videoId, song.title);
+        document.querySelectorAll('.song-card-wrapper').forEach((wrapper, i) => {
+            createShards(wrapper, wrapper.querySelector('.song-card-content').innerHTML, songs[i].file, songs[i].title);
         });
     }
 
     function setCategory(cat) {
         currentCategory = cat;
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.getAttribute('data-filter') === cat);
-        });
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === cat));
         runFilter();
     }
 
     function runFilter() {
-        const searchVal = document.getElementById('searchInput').value.toLowerCase();
-        const cards = document.querySelectorAll('.song-card-wrapper');
-
-        cards.forEach(card => {
-            const title = card.getAttribute('data-title');
-            const tags = card.getAttribute('data-tags').split(' ');
-            
-            const matchesSearch = title.includes(searchVal) || tags.some(t => t.includes(searchVal));
-            const matchesCategory = currentCategory === 'all' || tags.includes(currentCategory);
-
-            if (matchesSearch && matchesCategory) {
-                card.style.display = 'block';
-            } else {
-                card.style.display = 'none';
-            }
+        const query = document.getElementById('searchInput').value.toLowerCase();
+        document.querySelectorAll('.song-card-wrapper').forEach(card => {
+            const matchesSearch = card.dataset.title.includes(query) || card.dataset.tags.includes(query);
+            const matchesCat = currentCategory === 'all' || card.dataset.tags.split(' ').includes(currentCategory);
+            card.style.display = (matchesSearch && matchesCat) ? 'block' : 'none';
         });
     }
 
