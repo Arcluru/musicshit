@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neon Vault v3.0 // Audio</title>
+    <title>Neon Vault v4.0 // Audio</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Outfit:wght@300;400;600&display=swap');
 
@@ -40,12 +40,6 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             filter: drop-shadow(0 0 15px rgba(188, 19, 254, 0.5));
-            animation: titleGlow 4s infinite alternate;
-        }
-
-        @keyframes titleGlow {
-            from { filter: drop-shadow(0 0 10px rgba(188, 19, 254, 0.4)); }
-            to { filter: drop-shadow(0 0 25px rgba(0, 212, 255, 0.6)); }
         }
 
         .header-ui {
@@ -55,7 +49,6 @@
             padding: 30px;
             border-radius: 30px;
             margin-bottom: 60px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
             position: sticky;
             top: 20px;
             z-index: 900;
@@ -71,13 +64,7 @@
             font-size: 1.1rem;
             margin-bottom: 20px;
             outline: none;
-            transition: 0.4s;
             box-sizing: border-box;
-        }
-
-        #searchInput:focus {
-            border-color: var(--accent-3);
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
         }
 
         .controls { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
@@ -94,12 +81,7 @@
             transition: 0.3s;
         }
 
-        .filter-btn:hover, .filter-btn.active {
-            background: white;
-            color: black;
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(255,255,255,0.1);
-        }
+        .filter-btn.active { background: white; color: black; }
 
         .song-grid {
             display: grid;
@@ -107,51 +89,33 @@
             gap: 30px;
         }
 
+        .song-card-wrapper { position: relative; perspective: 1000px; cursor: pointer; }
+
         .song-card {
             background: var(--card-glass);
             border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 24px;
             padding: 30px;
-            position: relative;
             transition: 0.3s;
-            cursor: pointer;
         }
 
-        .song-card-wrapper {
-            position: relative;
-            perspective: 1000px;
-        }
-
-        .song-card-content {
-            position: relative;
-            z-index: 2;
-            pointer-events: none;
-        }
+        .song-card-content { pointer-events: none; }
 
         .shatter-container {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 1;
         }
 
         .shard {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             background: var(--card-glass);
             border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 24px;
             transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             opacity: 0;
-            box-shadow: 0 0 15px rgba(0, 212, 255, 0.6), 
-                        0 0 25px rgba(188, 19, 254, 0.4),
-                        inset 0 0 20px rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
         }
 
         .song-card-wrapper.shattered .shard { opacity: 1; }
@@ -159,86 +123,79 @@
 
         .song-card h3 {
             margin: 0 0 15px 0;
-            font-size: 1.4rem;
-            background: linear-gradient(to right, #fff, #888);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-size: 1.3rem;
+            color: #fff;
         }
 
         .tag-row { display: flex; gap: 8px; flex-wrap: wrap; }
-
         .tag {
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 700;
-            padding: 6px 14px;
-            border-radius: 8px;
+            padding: 5px 12px;
+            border-radius: 6px;
             text-transform: uppercase;
-            letter-spacing: 1px;
             border: 1px solid transparent;
         }
+        .tag-nc { border-color: var(--accent-2); color: #e0aaff; }
+        .tag-g { border-color: var(--accent-1); color: #ff85a1; }
+        .tag-m { border-color: var(--accent-3); color: #90e0ef; }
 
-        .tag-nc { background: rgba(188, 19, 254, 0.1); border-color: var(--accent-2); color: #e0aaff; }
-        .tag-g { background: rgba(255, 0, 122, 0.1); border-color: var(--accent-1); color: #ff85a1; }
-        .tag-m { background: rgba(0, 212, 255, 0.1); border-color: var(--accent-3); color: #90e0ef; }
-        .tag-fav { background: linear-gradient(45deg, var(--accent-1), var(--accent-2)); color: white; border: none; }
-
-        /* ====================
-           MINI BOTTOM BAR
-           ==================== */
+        /* PLAYER BAR */
         #miniPlayer {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: rgba(10, 10, 20, 0.95);
-            backdrop-filter: blur(15px);
-            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            bottom: 0; left: 0; width: 100%;
+            background: rgba(10, 10, 20, 0.98);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
             z-index: 1900;
-            padding: 15px 30px;
+            padding: 20px 40px;
             box-sizing: border-box;
             display: flex;
             align-items: center;
             justify-content: space-between;
             transform: translateY(100%);
-            transition: transform 0.3s ease-in-out;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1);
         }
 
         #miniPlayer.visible { transform: translateY(0); }
 
-        .mini-info { display: flex; align-items: center; gap: 20px; }
+        .mini-info { display: flex; align-items: center; gap: 25px; }
+        .mini-title { font-weight: 600; font-size: 1.1rem; color: #fff; }
 
-        .playing-indicator { display: flex; gap: 3px; height: 15px; align-items: flex-end; }
-        .bar { width: 3px; height: 2px; background: var(--accent-3); transition: height 0.1s ease; }
-
-        .playing-indicator.animating .bar { animation: equalizer 0.5s infinite alternate; }
-        .playing-indicator.animating .bar:nth-child(2) { animation-delay: 0.1s; background: var(--accent-2); }
-        .playing-indicator.animating .bar:nth-child(3) { animation-delay: 0.2s; background: var(--accent-1); }
-
-        @keyframes equalizer { 0% { height: 2px; } 100% { height: 15px; } }
-
-        .mini-title { font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 1.1rem; color: white; }
-
-        .mini-controls { display: flex; gap: 15px; align-items: center; }
+        .mini-controls { display: flex; gap: 20px; align-items: center; }
 
         .icon-btn {
-            background: none;
-            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
             color: white;
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: 0.2s;
+            transition: 0.3s;
+            font-size: 1.2rem;
         }
 
-        .icon-btn:hover { background: white; color: black; }
-        
-        input[type=range] { -webkit-appearance: none; width: 80px; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 12px; height: 12px; border-radius: 50%; background: var(--accent-3); cursor: pointer; }
+        .icon-btn:hover { background: rgba(255,255,255,0.2); }
+        .icon-btn.active-mode { 
+            background: var(--accent-3); 
+            color: black; 
+            box-shadow: 0 0 15px var(--accent-3);
+            border: none;
+        }
+
+        .play-btn { background: white; color: black; width: 55px; height: 55px; font-size: 1.5rem; }
+
+        /* EQUALIZER */
+        .playing-indicator { display: flex; gap: 3px; height: 18px; align-items: flex-end; }
+        .bar { width: 3px; height: 2px; background: var(--accent-3); transition: 0.2s; }
+        .animating .bar { animation: eq 0.6s infinite alternate; }
+        .animating .bar:nth-child(2) { animation-delay: 0.2s; }
+        .animating .bar:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes eq { from { height: 2px; } to { height: 18px; } }
     </style>
 </head>
 <body>
@@ -263,18 +220,15 @@
 <div id="miniPlayer">
     <div class="mini-info">
         <div class="playing-indicator" id="equalizer">
-            <div class="bar"></div>
-            <div class="bar"></div>
-            <div class="bar"></div>
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
         </div>
         <div class="mini-title" id="miniTitle">Select a track...</div>
     </div>
+    
     <div class="mini-controls">
-        <div style="display:flex; align-items:center; gap:10px;">
-            <span style="font-size: 10px; color:#aaa">VOL</span>
-            <input type="range" min="0" max="1" step="0.01" value="0.5" oninput="setVolume(this.value)">
-        </div>
-        <button class="icon-btn" onclick="togglePlay()"><span id="playIcon">▶</span></button>
+        <button class="icon-btn" id="shuffleBtn" onclick="toggleShuffle()" title="Shuffle">🔀</button>
+        <button class="icon-btn" id="loopBtn" onclick="toggleLoop()" title="Loop Current">🔁</button>
+        <button class="icon-btn play-btn" onclick="togglePlay()"><span id="playIcon">▶</span></button>
     </div>
 </div>
 
@@ -379,17 +333,39 @@
         { title: "All I Ever Wanted", tags: ["m"], file: "Basshunter_-_All_I_Ever_Wanted_OFFICIAL_VIDEO_Ultra_Music_.mp3" }
     ];
 
-    let currentCategory = 'all';
+    let currentIndex = 0;
+    let isShuffle = false;
+    let isLoopCurrent = false;
     let currentShattered = null;
     let audioPlayer = new Audio();
-    audioPlayer.volume = 0.5;
 
-    function startTrack(fileName, title) {
-        audioPlayer.src = "songs/" + fileName;
+    function startTrack(index) {
+        currentIndex = index;
+        const song = songs[currentIndex];
+        audioPlayer.src = "songs/" + song.file;
         audioPlayer.play().catch(e => console.error("Playback failed:", e));
-        document.getElementById('miniTitle').textContent = title;
+        
+        document.getElementById('miniTitle').textContent = song.title;
         document.getElementById('miniPlayer').classList.add('visible');
         updatePlayIcon(true);
+        
+        // Update shattering effect visually if not already shattered
+        const wrappers = document.querySelectorAll('.song-card-wrapper');
+        if (currentShattered) currentShattered.classList.remove('shattered');
+        wrappers[currentIndex].classList.add('shattered');
+        currentShattered = wrappers[currentIndex];
+    }
+
+    function playNext() {
+        if (isLoopCurrent) {
+            startTrack(currentIndex); // Repeat same
+        } else if (isShuffle) {
+            let nextIndex = Math.floor(Math.random() * songs.length);
+            startTrack(nextIndex);
+        } else {
+            let nextIndex = (currentIndex + 1) % songs.length;
+            startTrack(nextIndex);
+        }
     }
 
     function togglePlay() {
@@ -398,16 +374,24 @@
         updatePlayIcon(!audioPlayer.paused);
     }
 
+    function toggleShuffle() {
+        isShuffle = !isShuffle;
+        document.getElementById('shuffleBtn').classList.toggle('active-mode', isShuffle);
+    }
+
+    function toggleLoop() {
+        isLoopCurrent = !isLoopCurrent;
+        document.getElementById('loopBtn').classList.toggle('active-mode', isLoopCurrent);
+    }
+
     function updatePlayIcon(isPlaying) {
         document.getElementById('playIcon').textContent = isPlaying ? "⏸" : "▶";
         document.getElementById('equalizer').classList.toggle('animating', isPlaying);
     }
 
-    function setVolume(val) { audioPlayer.volume = val; }
+    audioPlayer.addEventListener('ended', playNext);
 
-    audioPlayer.addEventListener('ended', () => updatePlayIcon(false));
-
-    function createShards(wrapper, content, fileName, title) {
+    function createShards(wrapper, content, index) {
         const container = document.createElement('div');
         container.className = 'shatter-container';
         const shardData = [
@@ -418,7 +402,7 @@
             { clip: 'polygon(25% 30%, 55% 25%, 60% 45%, 45% 60%, 20% 55%)', transform: 'translate(0, 5px) rotate(-2deg)' },
             { clip: 'polygon(70% 50%, 100% 45%, 100% 70%, 75% 72%)', transform: 'translate(12px, 5px) rotate(2deg)' },
             { clip: 'polygon(0 50%, 20% 55%, 15% 78%, 0 75%)', transform: 'translate(-10px, 8px) rotate(-2deg)' },
-            { clip: 'polygon(15% 78%, 40% 85%, 55% 90%, 70% 95%, 100% 100%, 0 100%)', transform: 'translate(0, 18px) rotate(0deg)' }
+            { clip: 'polygon(15% 78%, 100% 100%, 0 100%)', transform: 'translate(0, 18px) rotate(0deg)' }
         ];
 
         shardData.forEach(s => {
@@ -431,21 +415,12 @@
         });
 
         wrapper.appendChild(container);
-        wrapper.addEventListener('click', () => {
-            if (currentShattered && currentShattered !== wrapper) {
-                currentShattered.classList.remove('shattered');
-                currentShattered.querySelectorAll('.shard').forEach(s => s.style.transform = 'translate(0,0) rotate(0deg)');
-            }
-            wrapper.classList.add('shattered');
-            wrapper.querySelectorAll('.shard').forEach(s => s.style.transform = s.dataset.transform);
-            currentShattered = wrapper;
-            startTrack(fileName, title);
-        });
+        wrapper.addEventListener('click', () => startTrack(index));
     }
 
     function renderSongs() {
         const grid = document.getElementById('songGrid');
-        grid.innerHTML = songs.map(song => `
+        grid.innerHTML = songs.map((song, i) => `
             <div class="song-card-wrapper" data-title="${song.title.toLowerCase()}" data-tags="${song.tags.join(' ')}">
                 <div class="song-card">
                     <div class="song-card-content">
@@ -456,21 +431,23 @@
             </div>`).join('');
 
         document.querySelectorAll('.song-card-wrapper').forEach((wrapper, i) => {
-            createShards(wrapper, wrapper.querySelector('.song-card-content').innerHTML, songs[i].file, songs[i].title);
+            createShards(wrapper, wrapper.querySelector('.song-card-content').innerHTML, i);
         });
     }
 
     function setCategory(cat) {
-        currentCategory = cat;
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === cat));
-        runFilter();
+        runFilter(cat);
     }
 
-    function runFilter() {
+    function runFilter(catOverride = null) {
         const query = document.getElementById('searchInput').value.toLowerCase();
+        const activeCatBtn = document.querySelector('.filter-btn.active');
+        const cat = catOverride || activeCatBtn.dataset.filter;
+
         document.querySelectorAll('.song-card-wrapper').forEach(card => {
-            const matchesSearch = card.dataset.title.includes(query) || card.dataset.tags.includes(query);
-            const matchesCat = currentCategory === 'all' || card.dataset.tags.split(' ').includes(currentCategory);
+            const matchesSearch = card.dataset.title.includes(query);
+            const matchesCat = cat === 'all' || card.dataset.tags.split(' ').includes(cat);
             card.style.display = (matchesSearch && matchesCat) ? 'block' : 'none';
         });
     }
